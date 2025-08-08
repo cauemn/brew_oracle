@@ -118,7 +118,8 @@ Ele responde **usando a base de conhecimento indexada**, **cita as fontes** e ma
 5. **Criar a collection no Qdrant**
 
     ```bash
-    pdm run python -m brew_oracle.scripts.create_collections
+    # com suporte a vetores esparsos (BM25)
+    pdm run python -m brew_oracle.scripts.create_collections --hybrid
     ```
 
 6. **Adicionar PDFs**
@@ -128,7 +129,7 @@ Ele responde **usando a base de conhecimento indexada**, **cita as fontes** e ma
 7. **Ingerir PDFs**
 
     ```bash
-    pdm run python -c "from brew_oracle.knowledge.pdf_kb import ingest_pdfs; ingest_pdfs()"
+    pdm run python -c "from brew_oracle.knowledge.pdf_kb import ingest_pdfs; ingest_pdfs(hybrid=True)"
     # Saída esperada: OK: 589 pontos na coleção 'brew_books'.
     ```
 
@@ -138,6 +139,8 @@ Ele responde **usando a base de conhecimento indexada**, **cita as fontes** e ma
     pdm run python -m brew_oracle.core.run
     # com rerank
     pdm run python -m brew_oracle.core.run --rerank
+    # com busca híbrida (denso + BM25)
+    pdm run python -m brew_oracle.core.run --hybrid
     ```
 
 ---
@@ -229,7 +232,6 @@ Aumente `TOP_K` (25–30) para bases médias e ative rerank para respostas mais 
 
 ## 🗺️ Roadmap
 
-- Consulta híbrida (denso + BM25) com fusion scoring
 - Rerank integrado ao orquestrador
 - Agente de Receitas (BeerXML → JSON → Qdrant)
 - UI (Streamlit / Discord / Telegram)

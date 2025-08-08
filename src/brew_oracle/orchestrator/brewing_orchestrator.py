@@ -13,9 +13,10 @@ class BrewingOrchestrator:
         rerank: bool = False,
         rerank_model_id: str = "cross-encoder/ms-marco-MiniLM-L-6-v2",
         rerank_model_kwargs: dict | None = None,
+        hybrid: bool = False,
     ) -> None:
 
-        self.kb = kb or build_pdf_kb()
+        self.kb = kb or build_pdf_kb(hybrid=hybrid)
         s = Settings()
         self.model = model or Gemini(id="gemini-2.0-flash", api_key=s.GOOGLE_API_KEY)
 

@@ -11,12 +11,17 @@ from brew_oracle.knowledge.pdf_kb import build_pdf_kb
 def main() -> None:
     parser = argparse.ArgumentParser(description="Query PDF KB with rerank")
     parser.add_argument("query", nargs="?", help="Pergunta a ser pesquisada")
+    parser.add_argument(
+        "--hybrid",
+        action="store_true",
+        help="Combina busca densa e BM25 via fusion scoring",
+    )
     args = parser.parse_args()
 
     query = args.query or input("Pergunta: ")
 
     s = Settings()
-    kb = build_pdf_kb()
+    kb = build_pdf_kb(hybrid=args.hybrid)
 
     docs = kb.search(query, top_k=s.TOP_K)
 
