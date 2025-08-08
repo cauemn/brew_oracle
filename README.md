@@ -1,7 +1,7 @@
 # 🍺 Brew Oracle
 
-**Brew Oracle** é um agente de IA especializado em cerveja artesanal, treinado a partir de PDFs técnicos (ex.: BJCP 2021).
-Ele responde **usando apenas a base de conhecimento indexada**, **cita as fontes** e mantém o tom claro, útil e bem-humorado.
+**Brew Oracle** é um agente de IA especializado em cerveja artesanal, treinado a partir de PDFs técnicos.
+Ele responde **usando a base de conhecimento indexada**, **cita as fontes** e mantém o tom claro, útil e bem-humorado.
 
 ---
 
@@ -223,5 +223,5 @@ Pull requests são bem-vindos! Para mudanças maiores, abra uma issue descrevend
 
 ## 📄 Licença
 
-MIT — veja [LICENSE](LICENSE).
+Apache 2.0 — veja [LICENSE](LICENSE).
 
