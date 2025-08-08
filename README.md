@@ -88,6 +88,11 @@ Ele responde **usando a base de conhecimento indexada**, **cita as fontes** e ma
 
     TOP_K=25
 
+    # Configuração do chunking
+    CHUNK_SIZE=2000
+    CHUNK_OVERLAP=300
+    NUM_DOCUMENTS=5
+
     # Gemini (AI Studio): https://aistudio.google.com/
     GOOGLE_API_KEY=coloque_sua_chave_aqui
     ```
@@ -179,6 +184,8 @@ Config padrão recomendada (boa relação custo/qualidade):
 
 Menos pontos → buscas mais rápidas; chunks maiores → contexto mais coeso.
 Para algo mais "cirúrgico", use 1000/150 e considere reranking.
+
+💡 Ajuste `CHUNK_SIZE`, `CHUNK_OVERLAP` e `NUM_DOCUMENTS` no `.env` para personalizar o chunking e o número de documentos retornados.
 
 ---
 

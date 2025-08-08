@@ -24,13 +24,13 @@ def build_pdf_kb() -> PDFKnowledgeBase:
         ),
         reader=PDFReader(
             chunk=True,
-            chunk_size=2000, 
+            chunk_size=s.CHUNK_SIZE,
             chunking_strategy=RecursiveChunking(
-                chunk_size=2000,
-                overlap=300,
-                ),
+                chunk_size=s.CHUNK_SIZE,
+                overlap=s.CHUNK_OVERLAP,
+            ),
         ),
-        num_documents=5,
+        num_documents=s.NUM_DOCUMENTS,
     )
     return kb
 
