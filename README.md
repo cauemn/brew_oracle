@@ -136,6 +136,8 @@ Ele responde **usando a base de conhecimento indexada**, **cita as fontes** e ma
 
     ```bash
     pdm run python -m brew_oracle.core.run
+    # com rerank
+    pdm run python -m brew_oracle.core.run --rerank
     ```
 
 ---
@@ -164,6 +166,14 @@ self.agent = Agent(
 ## 🔍 Busca + Rerank (opcional, recomendado)
 
 Para melhorar a precisão: buscar `TOP_K` alto no Qdrant e reranquear com `cross-encoder/ms-marco-MiniLM-L-6-v2`.
+
+Ative direto no CLI:
+
+```bash
+pdm run python -m brew_oracle.core.run --rerank
+```
+
+Ou rode o script isolado:
 
 ```bash
 pdm run python -m brew_oracle.scripts.query_with_rerank
