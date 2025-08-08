@@ -1,0 +1,15 @@
+.py[cod]
+__pycache__/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.pdm-python
+.env
+*.env
+*.pdm.toml
+*.pdm.lock
+*.pdm.toml.lock
+*.pdm-local.toml
+*.pdm-local.lock
+*.pdm-venv
+*.pdm-venv.lock
