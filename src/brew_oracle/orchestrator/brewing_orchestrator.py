@@ -2,12 +2,14 @@
 from agno.agent import Agent
 from agno.models.google import Gemini
 from brew_oracle.knowledge.pdf_kb import build_pdf_kb
+from brew_oracle.utils.config import Settings
 
 class BrewingOrchestrator:
     def __init__(self, kb=None, model=None):
 
         self.kb = kb or build_pdf_kb()
-        self.model = model or Gemini(id="gemini-2.0-flash")  
+        s = Settings()
+        self.model = model or Gemini(id="gemini-2.0-flash", api_key=s.GOOGLE_API_KEY)
 
         self.agent = Agent(
             name="BrewingOrchestrator",

@@ -12,7 +12,7 @@ class Settings(BaseSettings):
 
     TOP_K: int = Field(default=20)
 
-    GOOGLE_GENAI_API_KEY: str | None = None
+    GOOGLE_API_KEY: str | None = Field(default=None)
 
     model_config = SettingsConfigDict(
         env_file='.env',
