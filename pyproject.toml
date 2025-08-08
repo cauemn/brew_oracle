@@ -20,3 +20,4 @@ distribution = false
 create-collection = { cmd = "python -m brew_oracle.scripts.create_collections", env = { PYTHONPATH = "src" }, env_file = ".env" }
 ingest-pdfs       = { cmd = "python -c \"from brew_oracle.knowledge.pdf_kb import ingest_pdfs; ingest_pdfs()\"", env = { PYTHONPATH = "src" }, env_file = ".env" }
 brew-oracle       = { cmd = "python -m brew_oracle.core.run", env = { PYTHONPATH = "src" }, env_file = ".env" }
+query-with-rerank = { cmd = "python -m brew_oracle.scripts.query_with_rerank", env = { PYTHONPATH = "src" }, env_file = ".env" }
