@@ -7,7 +7,7 @@ class Settings(BaseSettings):
 
     PDF_PATH: str = Field(default="knowledge/pdfs")
 
-    EMBEDDER_ID: str = Field(default="all-MiniLM-L6-v2")
+    EMBEDDER_ID: str = Field(default="./models/all-MiniLM-L6-v2")
     EMBEDDER_DIM: int = Field(default=384)
 
     TOP_K: int = Field(default=20)

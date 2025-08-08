@@ -11,8 +11,8 @@ def build_pdf_kb() -> PDFKnowledgeBase:
     os.makedirs(s.PDF_PATH, exist_ok=True)
 
     embedder = SentenceTransformerEmbedder(
-    id="./models/all-MiniLM-L6-v2",  
-    dimensions=384,
+        id=s.EMBEDDER_ID,
+        dimensions=s.EMBEDDER_DIM,
     )
 
     kb = PDFKnowledgeBase(

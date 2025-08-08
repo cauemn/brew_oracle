@@ -92,6 +92,11 @@ Ele responde **usando a base de conhecimento indexada**, **cita as fontes** e ma
     GOOGLE_API_KEY=coloque_sua_chave_aqui
     ```
 
+    > 💡 Para usar outro modelo de embeddings, altere `EMBEDDER_ID` e `EMBEDDER_DIM`.
+    > `EMBEDDER_ID` pode ser um caminho local (ex.: `./models/meu-modelo`) ou o
+    > identificador do modelo no Hugging Face, e `EMBEDDER_DIM` deve refletir o
+    > tamanho do vetor produzido por ele.
+
 4. **(Opcional) Baixar o embedder localmente**
 
     ```bash
