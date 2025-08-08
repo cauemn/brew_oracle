@@ -12,6 +12,10 @@ class Settings(BaseSettings):
 
     TOP_K: int = Field(default=20)
 
+    CHUNK_SIZE: int = Field(default=2000)
+    CHUNK_OVERLAP: int = Field(default=300)
+    NUM_DOCUMENTS: int = Field(default=5)
+
     GOOGLE_API_KEY: str | None = Field(default=None)
 
     model_config = SettingsConfigDict(
