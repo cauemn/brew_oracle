@@ -10,9 +10,14 @@ def main():
         action="store_true",
         help="Reordena os resultados da busca com CrossEncoder",
     )
+    parser.add_argument(
+        "--hybrid",
+        action="store_true",
+        help="Combina busca densa e BM25 via fusion scoring",
+    )
     args = parser.parse_args()
 
-    agent = BrewingOrchestrator(rerank=args.rerank)
+    agent = BrewingOrchestrator(rerank=args.rerank, hybrid=args.hybrid)
     print("Digite uma pergunta (ou 'exit' para sair):")
     while True:
         try:
