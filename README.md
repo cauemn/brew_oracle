@@ -86,7 +86,7 @@ Ele responde **usando a base de conhecimento indexada**, **cita as fontes** e ma
     EMBEDDER_ID=./models/all-MiniLM-L6-v2
     EMBEDDER_DIM=384
 
-    TOP_K=25
+    TOP_K=20
 
     # Configuração do chunking
     CHUNK_SIZE=2000
