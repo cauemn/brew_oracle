@@ -1,5 +1,4 @@
 # src/brew_oracle/knowledge/pdf_kb.py
-import logging
 import os
 
 from agno.document.chunking.recursive import RecursiveChunking
@@ -9,9 +8,9 @@ from agno.vectordb.qdrant import Qdrant
 from agno.vectordb.search import SearchType
 
 from brew_oracle.utils.config import Settings
+from brew_oracle.utils.logging import setup_logging
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = setup_logging(Settings().LOG_LEVEL)
 
 
 def build_pdf_kb(hybrid: bool = False) -> PDFKnowledgeBase:
