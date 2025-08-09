@@ -5,7 +5,7 @@ description = "AI agent specialized in craft beer, recipes, styles, and all thin
 authors = [
     {name = "cauemn", email = "caue@stellaria.com.br"},
 ]
-dependencies = ["agno>=1.7.8", "qdrant-client>=1.15.1", "pdfplumber>=0.11.7", "python-dotenv>=1.1.1", "tqdm>=4.67.1", "sentence-transformers>=5.1.0", "xmltodict>=0.14.2", "pypdf>=5.9.0", "pydantic-settings>=2.10.1", "google-genai>=1.29.0", "fastembed>=0.3.4"]
+dependencies = ["agno>=1.7.8", "qdrant-client>=1.15.1", "pdfplumber>=0.11.7", "python-dotenv>=1.1.1", "tqdm>=4.67.1", "sentence-transformers>=5.1.0", "xmltodict>=0.14.2", "pypdf>=5.9.0", "pydantic-settings>=2.10.1", "google-genai>=1.29.0", "fastembed>=0.3.4", "pybeerxml>=0.2.0"]
 requires-python = "==3.13.*"
 readme = "README.md"
 license = {text = "MIT"}
@@ -18,14 +18,18 @@ distribution = false
 
 [tool.pdm.scripts]
 create-collection   = { cmd = "python -m brew_oracle.scripts.create_collections", env = { PYTHONPATH = "src" }, env_file = ".env" }
+create-recipe-collection = { cmd = "python -m brew_oracle.scripts.create_collections --collection brew_recipes", env = { PYTHONPATH = "src" }, env_file = ".env" }
 ingest-pdfs         = { cmd = "python -c \"from brew_oracle.knowledge.pdf_kb import ingest_pdfs; ingest_pdfs()\"", env = { PYTHONPATH = "src" }, env_file = ".env" }
 ingest-pdfs-hybrid  = { cmd = "python -c \"from brew_oracle.knowledge.pdf_kb import ingest_pdfs; ingest_pdfs(hybrid=True)\"", env = { PYTHONPATH = "src", HF_HUB_OFFLINE = "" }, env_file = ".env" }
+ingest-recipes      = { cmd = "python -m brew_oracle.knowledge.beerxml_kb", env = { PYTHONPATH = "src", HF_HUB_OFFLINE = "" }, env_file = ".env" }
+ingest-recipes-hybrid = { cmd = "python -m brew_oracle.knowledge.beerxml_kb --hybrid", env = { PYTHONPATH = "src", HF_HUB_OFFLINE = "" }, env_file = ".env" }
 brew-oracle         = { cmd = "python -m brew_oracle.core.run", env = { PYTHONPATH = "src", HF_HUB_OFFLINE = "" }, env_file = ".env" }
 lint                = { cmd = "ruff check .", env = { PYTHONPATH = "src" } }
 lint-fix            = { cmd = "ruff check . --fix", env = { PYTHONPATH = "src" } }
 format              = { cmd = "ruff format", env = { PYTHONPATH = "src" } }
 typecheck           = { cmd = "mypy src", env = { PYTHONPATH = "src" } }
 query-with-rerank   = { cmd = "python -m brew_oracle.scripts.query_with_rerank", env = { PYTHONPATH = "src" }, env_file = ".env" }
+test                = { cmd = "python -m unittest discover -s tests", env = { PYTHONPATH = "src" } }
 
 [tool.ruff]
 line-length = 100

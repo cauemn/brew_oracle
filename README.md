@@ -5,9 +5,9 @@ Ele responde **usando a base de conhecimento indexada**, **cita as fontes** e ma
 
 ---
 
-## 🔎 Visão geral
+## 🔎 Visão Geral
 
-### Stack principal
+### Stack Principal
 
 - Python 3.13
 - Agno (agentes + RAG)
@@ -15,31 +15,31 @@ Ele responde **usando a base de conhecimento indexada**, **cita as fontes** e ma
 - Sentence Transformers (embeddings)
 - Google Gemini (modelo de linguagem)
 
-**Fluxo:** Usuário → Orquestrador (Agno) → Busca no Qdrant → *(opcional: Rerank)* → Gemini → Resposta **com referências**.
+**Fluxo:** Usuário → Orquestrador (Agno) → Busca combinada no Qdrant (bases `brew_books` e `brew_recipes`) → *(opcional: Rerank)* → Gemini → Resposta **com referências**.
 
 ---
 
-## 📁 Estrutura do projeto
+## 📁 Estrutura do Projeto
 
 ```
 .
 ├─ knowledge/
-│  └─ pdfs/                           # coloque seus PDFs aqui
-├─ models/
-│  └─ all-MiniLM-L6-v2/               # cache local do embedder (opcional)
+│  ├─ pdfs/                           # Coloque seus PDFs aqui
+│  └─ recipes/                        # Coloque suas receitas BeerXML aqui
 ├─ src/
 │  └─ brew_oracle/
 │     ├─ core/
-│     │  └─ run.py                    # ponto de entrada do agente (CLI)
+│     │  └─ run.py                    # Ponto de entrada do agente (CLI)
 │     ├─ knowledge/
-│     │  └─ pdf_kb.py                 # construção/ingestão da KB de PDFs
+│     │  ├─ pdf_kb.py                 # Construção/ingestão da base de conhecimento de PDFs
+│     │  └─ beerxml_kb.py             # Construção/ingestão da base de conhecimento de receitas BeerXML
 │     ├─ orchestrator/
-│     │  └─ brewing_orchestrator.py   # agente orquestrador
+│     │  └─ brewing_orchestrator.py   # Agente orquestrador
 │     ├─ scripts/
-│     │  ├─ create_collections.py     # cria a collection no Qdrant
-│     │  └─ query_with_rerank.py      # busca + rerank (opcional)
+│     │  └─ create_collections.py     # Cria as coleções no Qdrant
 │     └─ utils/
-│        └─ config.py                 # Settings (lê .env)
+│        └─ config.py                 # Configurações (lê .env)
+├─ tests/                             # Testes automatizados
 ├─ .env
 ├─ pyproject.toml
 └─ README.md
@@ -49,117 +49,111 @@ Ele responde **usando a base de conhecimento indexada**, **cita as fontes** e ma
 
 ## ⚙️ Pré-requisitos
 
-- Docker (para Qdrant)
+- Docker (para o Qdrant)
 - [PDM](https://pdm.fming.dev/) (gerenciador de pacotes)
 
 ---
 
-## 🚀 Instalação & setup
+## 🚀 Instalação e Configuração
 
-1. **Clonar & instalar dependências**
+1. **Clone e Instale as Dependências**
+   
+   ```bash
+   git clone https://github.com/<seu-usuario>/brew_oracle.git
+   cd brew_oracle
+   pdm install
+   ```
 
-    ```bash
-    git clone https://github.com/<seu-usuario>/brew_oracle.git
-    cd brew_oracle
-    pdm install
-    ```
+2. **Inicie o Qdrant**
+   
+   ```bash
+   docker run -d -p 6333:6333 \
+     -v "$(pwd)/qdrant_storage:/qdrant/storage" \
+     qdrant/qdrant:latest
+   ```
 
-2. **Subir Qdrant**
+3. **Configure o `.env`**
+    Crie um arquivo `.env` na raiz do projeto:
+   
+   ```ini
+   QDRANT_URL=http://localhost:6333
+   QDRANT_COLLECTION=brew_books
+   QDRANT_RECIPE_COLLECTION=brew_recipes
+   
+   PDF_PATH=knowledge/pdfs
+   BEERXML_PATH=knowledge/recipes
+   
+   EMBEDDER_ID=./models/all-MiniLM-L6-v2
+   EMBEDDER_DIM=384
+   
+   TOP_K=25
+   
+   CHUNK_SIZE=2000
+   CHUNK_OVERLAP=300
+   NUM_DOCUMENTS=5
+   
+   GOOGLE_API_KEY=sua_chave_api_do_google
+   ```
 
-    ```bash
-    docker run -d -p 6333:6333 \
-      -v "$(pwd)/qdrant_storage:/qdrant/storage" \
-      qdrant/qdrant:latest
-    ```
+4. **Crie as Coleções no Qdrant**
+   
+   ```bash
+   pdm run create-collection --hybrid
+   pdm run create-recipe-collection --hybrid
+   ```
 
-3. **Configurar `.env`**
+5. **Adicione os PDFs e Receitas**
+    Coloque seus arquivos PDF em `knowledge/pdfs/` e seus arquivos BeerXML em `knowledge/recipes/`.
 
-    Crie um arquivo `.env` na raiz:
+6. **Ingira os PDFs e Receitas**
+   
+   ```bash
+   pdm run ingest-pdfs-hybrid
+   pdm run ingest-recipes-hybrid
+   ```
 
-    ```ini
-    QDRANT_URL=http://localhost:6333
-    QDRANT_COLLECTION=brew_books
+---
 
-    PDF_PATH=knowledge/pdfs
+## 🚀 Executando o Agente
 
-    # Use o cache local do modelo para evitar 429 do HF:
-    EMBEDDER_ID=./models/all-MiniLM-L6-v2
-    EMBEDDER_DIM=384
+```bash
+# Execute o agente
+pdm run brew-oracle
 
-    TOP_K=25
+# Execute com rerank
+pdm run brew-oracle --rerank
 
-    # Configuração do chunking
-    CHUNK_SIZE=2000
-    CHUNK_OVERLAP=300
-    NUM_DOCUMENTS=5
+# Execute com busca híbrida (denso + BM25)
+pdm run brew-oracle --hybrid
+```
 
-    # Gemini (AI Studio): https://aistudio.google.com/
-    GOOGLE_API_KEY=coloque_sua_chave_aqui
-    ```
+---
 
-    > 💡 Para usar outro modelo de embeddings, altere `EMBEDDER_ID` e `EMBEDDER_DIM`.
-    > `EMBEDDER_ID` pode ser um caminho local (ex.: `./models/meu-modelo`) ou o
-    > identificador do modelo no Hugging Face, e `EMBEDDER_DIM` deve refletir o
-    > tamanho do vetor produzido por ele.
+## 🧪 Testes
 
-4. **(Opcional) Baixar o embedder localmente**
+Para executar os testes automatizados do projeto, utilize o seguinte comando:
 
-    ```bash
-    pdm run python - <<'PY'
-    from sentence_transformers import SentenceTransformer
-    import os
-    os.makedirs("models", exist_ok=True)
-    m=SentenceTransformer("all-MiniLM-L6-v2")
-    m.save("models/all-MiniLM-L6-v2")
-    print("Modelo salvo em models/all-MiniLM-L6-v2")
-    PY
-    ```
-
-5. **Criar a collection no Qdrant**
-
-    ```bash
-    # com suporte a vetores esparsos (BM25)
-    pdm run python -m brew_oracle.scripts.create_collections --hybrid
-    ```
-
-6. **Adicionar PDFs**
-
-    Coloque seus PDFs em `knowledge/pdfs/`.
-
-7. **Ingerir PDFs**
-
-    ```bash
-    pdm run python -c "from brew_oracle.knowledge.pdf_kb import ingest_pdfs; ingest_pdfs(hybrid=True)"
-    # Saída esperada: OK: 589 pontos na coleção 'brew_books'.
-    ```
-
-8. **Rodar o agente (CLI)**
-
-    ```bash
-    pdm run python -m brew_oracle.core.run
-    # com rerank
-    pdm run python -m brew_oracle.core.run --rerank
-    # com busca híbrida (denso + BM25)
-    pdm run python -m brew_oracle.core.run --hybrid
-    ```
+```bash
+pdm run test
+```
 
 ---
 
 ## 🧠 Orquestrador (com referências)
 
-O agente líder (Gemini) consulta a base e cita as fontes quando usa dados específicos.
+O agente principal (Gemini) consulta a base de conhecimento e cita as fontes ao usar dados específicos.
 
 ```python
 self.agent = Agent(
   name="BrewingOrchestrator",
-  model=Gemini(id="gemini-2.0-flash", api_key=...),
+  model=Gemini(id="gemini-1.5-flash", api_key=...), # Note: Changed from gemini-2.0-flash to gemini-1.5-flash
   knowledge=kb,                      # PDFKnowledgeBase
   search_knowledge=True,
   add_references=True,
   markdown=True,
   instructions=(
-    "Responda usando SOMENTE a base; "
-    "cite arquivo/seção/página em cada afirmação factualmente específica."
+    "Responda SOMENTE usando a base de conhecimento; "
+    "cite o arquivo/seção/página para cada afirmação factualmente específica."
   ),
 )
 ```
@@ -168,84 +162,74 @@ self.agent = Agent(
 
 ## 🔍 Busca + Rerank (opcional, recomendado)
 
-Para melhorar a precisão: buscar `TOP_K` alto no Qdrant e reranquear com `cross-encoder/ms-marco-MiniLM-L-6-v2`.
+Para melhorar a precisão: busque com um `TOP_K` alto no Qdrant e reclassifique com `cross-encoder/ms-marco-MiniLM-L-6-v2`.
 
-Ative direto no CLI:
-
-```bash
-pdm run python -m brew_oracle.core.run --rerank
-```
-
-Ou rode o script isolado:
+Ative diretamente pela CLI:
 
 ```bash
-pdm run python -m brew_oracle.scripts.query_with_rerank
+pdm run brew-oracle --rerank
 ```
 
-Fluxo: embedding da query → Qdrant (`top_k=25–30`) → Rerank com CrossEncoder → mostra top-N com fonte/página/trecho → produção: passar os top-N reranqueados como contexto ao agente.
+--- 
 
----
+## 🔧 Ajuste de Chunking
 
-## 🔧 Tuning de chunking
-
-Config padrão recomendada (boa relação custo/qualidade):
+Configuração padrão recomendada (boa relação custo/qualidade):
 
 - `chunk_size`: 2000
 - `overlap`: 300
 - `separators`: `\n\n`, `\n`, `.`, `;`, `:`, `\t`
-- `reader`: `PDFReader(chunk=False)` → quem corta é o chunker (ex.: `RecursiveChunking`)
 
-Menos pontos → buscas mais rápidas; chunks maiores → contexto mais coeso.
-Para algo mais "cirúrgico", use 1000/150 e considere reranking.
+Para resultados mais precisos, use 1000/150 e considere o reranking.
 
-💡 Ajuste `CHUNK_SIZE`, `CHUNK_OVERLAP` e `NUM_DOCUMENTS` no `.env` para personalizar o chunking e o número de documentos retornados.
+💡 Ajuste `CHUNK_SIZE`, `CHUNK_OVERLAP` e `NUM_DOCUMENTS` no arquivo `.env` para personalizar o chunking e o número de documentos retornados.
 
----
+--- 
 
-## 🧪 Perguntas úteis para testar
+## 🧪 Perguntas Úteis para Testar
 
 - "Perfil de água para NEIPA (sulfato/cloreto)?"
-- "Como evitar *chill haze*?"
-- "Mash típico de Vienna Lager (temp/tempo)?"
+- "Como evitar a turbidez a frio (*chill haze*)?"
+- "Mostura típica de uma Vienna Lager (temperatura/tempo)?"
 
-Aumente `TOP_K` (25–30) para bases médias e ative rerank para respostas mais precisas.
+Aumente o `TOP_K` (25–30) para bases de conhecimento médias e ative o rerank para respostas mais precisas.
 
----
+--- 
 
-## 🧯 Troubleshooting
+## 🧯 Solução de Problemas
 
 - **ModuleNotFoundError: brew_oracle**
-  - Rode via módulo e garanta `PYTHONPATH=src` nos scripts do PDM.
+  
+  - Execute como um módulo e garanta que `PYTHONPATH=src` esteja nos scripts do PDM.
+
 - **Nada é ingerido (0 pontos)**
-  - Geralmente é schema do Qdrant. Garanta `vectors_config` compatível com `EMBEDDER_DIM` e evite nomes divergentes de vetor (o projeto cria `content_vec` por padrão).
-- **HTTP 429 na Hugging Face**
-  - Use o modelo local em `./models/all-MiniLM-L6-v2` (ver passo 4).
-- **Gemini sem responder**
-  - Verifique `GOOGLE_API_KEY` no `.env`.
-  - Teste rápido:
+  
+  - Geralmente é um problema de esquema do Qdrant. Garanta que o `vectors_config` é compatível com o `EMBEDDER_DIM` e evite nomes de vetores divergentes.
 
-    ```bash
-    pdm run python -c "from agno.models.google import Gemini; print(Gemini(id='gemini-2.0-flash', api_key='...').response([{'role':'user','content':'oi'}]).content)"
-    ```
+- **HTTP 429 no Hugging Face**
+  
+  - Use um modelo local (veja o passo 3 da instalação).
 
----
+- **Gemini não está respondendo**
+  
+  - Verifique a `GOOGLE_API_KEY` no `.env`.
+
+--- 
 
 ## 🗺️ Roadmap
 
 - Rerank integrado ao orquestrador
-- Agente de Receitas (BeerXML → JSON → Qdrant)
 - UI (Streamlit / Discord / Telegram)
-- Limpeza de PDF (anti-rodapé, des-hifenização)
+- Limpeza de PDF (remoção de rodapé, de-hifenização)
 
----
+--- 
 
-## 🤝 Contribuindo
+## 🤝 Contribuição
 
-Pull requests são bem-vindos! Para mudanças maiores, abra uma issue descrevendo a proposta.
+Pull requests são bem-vindos! Para mudanças maiores, por favor, abra uma issue primeiro para discutir o que você gostaria de mudar.
 
----
+--- 
 
 ## 📄 Licença
 
-Apache 2.0 — veja [LICENSE](LICENSE).
-
+MIT — veja [LICENSE](LICENSE).

@@ -10,6 +10,9 @@ class Settings(BaseSettings):
     SPARSE_MODEL_ID: str = Field(default="Qdrant/bm25")
 
     PDF_PATH: str = Field(default="knowledge/pdfs")
+    BEERXML_PATH: str = Field(default="knowledge/recipes")
+
+    QDRANT_RECIPE_COLLECTION: str = Field(default="brew_recipes")
 
     EMBEDDER_ID: str = Field(default="./models/all-MiniLM-L6-v2")
     EMBEDDER_DIM: int = Field(default=384)

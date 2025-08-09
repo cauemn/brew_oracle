@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RECIPES>
+  <RECIPE>
+    <NAME>My Test IPA</NAME>
+    <VERSION>1</VERSION>
+    <TYPE>All Grain</TYPE>
+    <BREWER>John Doe</BREWER>
+    <BATCH_SIZE>18.93</BATCH_SIZE>
+    <BOIL_SIZE>22.71</BOIL_SIZE>
+    <BOIL_TIME>60</BOIL_TIME>
+    <EFFICIENCY>75.0</EFFICIENCY>
+    <HOPS>
+      <HOP>
+        <NAME>Citra</NAME>
+        <ALPHA>12.0</ALPHA>
+        <AMOUNT>0.028</AMOUNT>
+        <USE>Boil</USE>
+        <TIME>60</TIME>
+      </HOP>
+      <HOP>
+        <NAME>Mosaic</NAME>
+        <ALPHA>12.5</ALPHA>
+        <AMOUNT>0.028</AMOUNT>
+        <USE>Dry Hop</USE>
+        <TIME>0</TIME>
+      </HOP>
+    </HOPS>
+    <FERMENTABLES>
+      <FERMENTABLE>
+        <NAME>Pale Malt (2 Row) US</NAME>
+        <AMOUNT>5.0</AMOUNT>
+        <YIELD>78.0</YIELD>
+        <COLOR>2.0</COLOR>
+      </FERMENTABLE>
+      <FERMENTABLE>
+        <NAME>Caramel/Crystal Malt - 40L</NAME>
+        <AMOUNT>0.5</AMOUNT>
+        <YIELD>75.0</YIELD>
+        <COLOR>40.0</COLOR>
+      </FERMENTABLE>
+    </FERMENTABLES>
+    <YEASTS>
+      <YEAST>
+        <NAME>Safale American US-05</NAME>
+        <TYPE>Ale</TYPE>
+        <FORM>Dry</FORM>
+        <AMOUNT>0.011</AMOUNT>
+      </YEAST>
+    </YEASTS>
+    <MISCS>
+      <MISC>
+        <NAME>Irish Moss</NAME>
+        <TYPE>Fining</TYPE>
+        <USE>Boil</USE>
+        <AMOUNT>0.005</AMOUNT>
+        <TIME>10</TIME>
+      </MISC>
+    </MISCS>
+    <WATERS>
+      <WATER>
+        <NAME>My Water Profile</NAME>
+        <CALCIUM>50</CALCIUM>
+        <BICARBONATE>100</BICARBONATE>
+        <SULFATE>150</SULFATE>
+        <CHLORIDE>75</CHLORIDE>
+        <SODIUM>20</SODIUM>
+        <MAGNESIUM>10</MAGNESIUM>
+      </WATER>
+    </WATERS>
+    <MASH>
+      <NAME>Single Infusion, Medium Body</NAME>
+      <STEPS>
+        <MASH_STEP>
+          <NAME>Mash In</NAME>
+          <TYPE>Infusion</TYPE>
+          <INFUSE_AMOUNT>15.0</INFUSE_AMOUNT>
+          <STEP_TEMP>67.0</STEP_TEMP>
+          <STEP_TIME>60</STEP_TIME>
+        </MASH_STEP>
+      </STEPS>
+    </MASH>
+    <NOTES>A simple, yet delicious IPA recipe.</NOTES>
+    <OG>1.060</OG>
+    <FG>1.012</FG>
+    <IBU>60.0</IBU>
+    <COLOR>7.0</COLOR>
+    <ABV>6.3</ABV>
+    <CARBONATION>2.4</CARBONATION>
+    <FORCED_CARBONATION>TRUE</FORCED_CARBONATION>
+    <PRIMING_SUGAR_NAME>Dextrose</PRIMING_SUGAR_NAME>
+    <PRIMING_SUGAR_AMOUNT>0.120</PRIMING_SUGAR_AMOUNT>
+  </RECIPE>
+</RECIPES>

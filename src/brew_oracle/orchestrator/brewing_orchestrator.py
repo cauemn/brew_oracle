@@ -2,6 +2,7 @@
 from agno.agent import Agent
 from agno.models.google import Gemini
 
+from brew_oracle.knowledge.beerxml_kb import build_recipe_kb
 from brew_oracle.knowledge.pdf_kb import build_pdf_kb
 from brew_oracle.utils.config import Settings
 
@@ -17,7 +18,8 @@ class BrewingOrchestrator:
         rerank_model_kwargs: dict | None = None,
         hybrid: bool = False,
     ) -> None:
-        self.kb = kb or build_pdf_kb(hybrid=hybrid)
+        self.pdf_kb = build_pdf_kb(hybrid=hybrid)
+        self.recipe_kb = build_recipe_kb(hybrid=hybrid)
         s = Settings()
         self.model = model or Gemini(id="gemini-2.0-flash", api_key=s.GOOGLE_API_KEY)
 
@@ -26,27 +28,32 @@ class BrewingOrchestrator:
             from sentence_transformers import CrossEncoder
 
             self._cross_encoder = CrossEncoder(rerank_model_id, **(rerank_model_kwargs or {}))
-            original_search = self.kb.search
 
-            def _search(query: str, *args, **kwargs):
-                docs = original_search(query, *args, **kwargs)
-                pairs = [(query, getattr(doc, "content", getattr(doc, "text", ""))) for doc in docs]
+        def _combined_search(query: str, *args, **kwargs):
+            pdf_docs = self.pdf_kb.search(query, *args, **kwargs)
+            recipe_docs = self.recipe_kb.search(query, *args, **kwargs)
+            combined_docs = pdf_docs + recipe_docs
+
+            if self.rerank:
+                pairs = [
+                    (query, getattr(doc, "content", getattr(doc, "text", "")))
+                    for doc in combined_docs
+                ]
                 scores = self._cross_encoder.predict(pairs)
                 reranked_docs = [
                     doc
                     for doc, _ in sorted(
-                        zip(docs, scores, strict=False), key=lambda x: x[1], reverse=True
+                        zip(combined_docs, scores, strict=False), key=lambda x: x[1], reverse=True
                     )
                 ]
                 return reranked_docs
-
-            self.kb.search = _search  # type: ignore[method-assign]
+            return combined_docs
 
         self.agent = Agent(
             name="BrewingOrchestrator",
             model=self.model,
-            knowledge=self.kb,
-            search_knowledge=True,
+            knowledge=self.pdf_kb,  # Initial knowledge base, will be overridden by search_knowledge
+            search_knowledge=_combined_search,  # type: ignore
             add_references=True,
             markdown=True,
             show_tool_calls=True,
@@ -72,7 +79,7 @@ class BrewingOrchestrator:
     def ask(self, question: str) -> str:
         resp = self.agent.run(question)
         print()
-        self.agent.print_response(question)
+        self.agent.print_response(question, stream=True)
         return getattr(resp, "content", str(resp))
 
     def ask_with_refs(self, question: str):
