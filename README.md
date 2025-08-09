@@ -91,8 +91,9 @@ Ele responde **usando a base de conhecimento indexada**, **cita as fontes** e ma
    CHUNK_SIZE=2000
    CHUNK_OVERLAP=300
    NUM_DOCUMENTS=5
-   
+
    GOOGLE_API_KEY=sua_chave_api_do_google
+   MODEL_ID=gemini-2.0-flash
    ```
 
 4. **Crie as Coleções no Qdrant**
@@ -144,9 +145,12 @@ pdm run test
 O agente principal (Gemini) consulta a base de conhecimento e cita as fontes ao usar dados específicos.
 
 ```python
+from brew_oracle.utils.config import Settings
+
+s = Settings()
 self.agent = Agent(
   name="BrewingOrchestrator",
-  model=Gemini(id="gemini-1.5-flash", api_key=...), # Note: Changed from gemini-2.0-flash to gemini-1.5-flash
+  model=Gemini(id=s.MODEL_ID, api_key=s.GOOGLE_API_KEY),
   knowledge=kb,                      # PDFKnowledgeBase
   search_knowledge=True,
   add_references=True,
