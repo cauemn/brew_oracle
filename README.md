@@ -227,9 +227,3 @@ Aumente o `TOP_K` (25–30) para bases de conhecimento médias e ative o rerank 
 ## 🤝 Contribuição
 
 Pull requests são bem-vindos! Para mudanças maiores, por favor, abra uma issue primeiro para discutir o que você gostaria de mudar.
-
---- 
-
-## 📄 Licença
-
-MIT — veja [LICENSE](LICENSE).
