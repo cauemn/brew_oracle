@@ -4,8 +4,8 @@ import argparse
 
 from sentence_transformers import CrossEncoder
 
-from brew_oracle.utils.config import Settings
 from brew_oracle.knowledge.pdf_kb import build_pdf_kb
+from brew_oracle.utils.config import Settings
 
 
 def main() -> None:
@@ -23,16 +23,14 @@ def main() -> None:
     s = Settings()
     kb = build_pdf_kb(hybrid=args.hybrid)
 
-    docs = kb.search(query, top_k=s.TOP_K)
+    # Use positional arg to satisfy different backends/signatures
+    docs = kb.search(query, s.TOP_K)
 
     cross_encoder = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
-    pairs = [
-        (query, getattr(doc, "content", getattr(doc, "text", "")))
-        for doc in docs
-    ]
+    pairs = [(query, getattr(doc, "content", getattr(doc, "text", ""))) for doc in docs]
     scores = cross_encoder.predict(pairs)
 
-    reranked = sorted(zip(docs, scores), key=lambda x: x[1], reverse=True)
+    reranked = sorted(zip(docs, scores, strict=False), key=lambda x: x[1], reverse=True)
 
     for idx, (doc, score) in enumerate(reranked[:5], 1):
         meta = getattr(doc, "meta", {}) or getattr(doc, "metadata", {})

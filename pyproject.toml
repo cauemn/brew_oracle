@@ -5,7 +5,7 @@ description = "AI agent specialized in craft beer, recipes, styles, and all thin
 authors = [
     {name = "cauemn", email = "caue@stellaria.com.br"},
 ]
-dependencies = ["agno>=1.7.8", "qdrant-client>=1.15.1", "pdfplumber>=0.11.7", "python-dotenv>=1.1.1", "tqdm>=4.67.1", "sentence-transformers>=5.1.0", "xmltodict>=0.14.2", "pypdf>=5.9.0", "pydantic-settings>=2.10.1", "google-genai>=1.29.0"]
+dependencies = ["agno>=1.7.8", "qdrant-client>=1.15.1", "pdfplumber>=0.11.7", "python-dotenv>=1.1.1", "tqdm>=4.67.1", "sentence-transformers>=5.1.0", "xmltodict>=0.14.2", "pypdf>=5.9.0", "pydantic-settings>=2.10.1", "google-genai>=1.29.0", "fastembed>=0.3.4"]
 requires-python = "==3.13.*"
 readme = "README.md"
 license = {text = "MIT"}
@@ -17,7 +17,39 @@ brew-oracle = "brew_oracle.core.run:main"
 distribution = false
 
 [tool.pdm.scripts]
-create-collection = { cmd = "python -m brew_oracle.scripts.create_collections", env = { PYTHONPATH = "src" }, env_file = ".env" }
-ingest-pdfs       = { cmd = "python -c \"from brew_oracle.knowledge.pdf_kb import ingest_pdfs; ingest_pdfs()\"", env = { PYTHONPATH = "src" }, env_file = ".env" }
-brew-oracle       = { cmd = "python -m brew_oracle.core.run", env = { PYTHONPATH = "src" }, env_file = ".env" }
-query-with-rerank = { cmd = "python -m brew_oracle.scripts.query_with_rerank", env = { PYTHONPATH = "src" }, env_file = ".env" }
+create-collection   = { cmd = "python -m brew_oracle.scripts.create_collections", env = { PYTHONPATH = "src" }, env_file = ".env" }
+ingest-pdfs         = { cmd = "python -c \"from brew_oracle.knowledge.pdf_kb import ingest_pdfs; ingest_pdfs()\"", env = { PYTHONPATH = "src" }, env_file = ".env" }
+ingest-pdfs-hybrid  = { cmd = "python -c \"from brew_oracle.knowledge.pdf_kb import ingest_pdfs; ingest_pdfs(hybrid=True)\"", env = { PYTHONPATH = "src", HF_HUB_OFFLINE = "" }, env_file = ".env" }
+brew-oracle         = { cmd = "python -m brew_oracle.core.run", env = { PYTHONPATH = "src", HF_HUB_OFFLINE = "" }, env_file = ".env" }
+lint                = { cmd = "ruff check .", env = { PYTHONPATH = "src" } }
+lint-fix            = { cmd = "ruff check . --fix", env = { PYTHONPATH = "src" } }
+format              = { cmd = "ruff format", env = { PYTHONPATH = "src" } }
+typecheck           = { cmd = "mypy src", env = { PYTHONPATH = "src" } }
+query-with-rerank   = { cmd = "python -m brew_oracle.scripts.query_with_rerank", env = { PYTHONPATH = "src" }, env_file = ".env" }
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E203", "E266"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+python_version = "3.13"
+warn_unused_ignores = true
+disallow_untyped_defs = false
+no_implicit_optional = true
+check_untyped_defs = true
+ignore_missing_imports = true
+files = ["src"]
+[dependency-groups]
+dev = [
+    "ruff>=0.12.8",
+    "mypy>=1.17.1",
+    "pre-commit>=4.2.0",
+]

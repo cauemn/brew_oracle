@@ -1,6 +1,7 @@
 # download_model.py
-from sentence_transformers import SentenceTransformer
 import os
+
+from sentence_transformers import SentenceTransformer
 
 os.makedirs("./models", exist_ok=True)
 
