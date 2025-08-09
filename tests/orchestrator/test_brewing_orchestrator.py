@@ -1,3 +1,4 @@
+import os
 import unittest
 from unittest.mock import MagicMock, patch
 
@@ -26,6 +27,24 @@ class TestBrewingOrchestrator(unittest.TestCase):
         mock_build_pdf_kb.assert_called_once_with(hybrid=False)
         mock_build_recipe_kb.assert_called_once_with(hybrid=False)
         mock_gemini.assert_called_once()
+
+    @patch("brew_oracle.orchestrator.brewing_orchestrator.build_pdf_kb")
+    @patch("brew_oracle.orchestrator.brewing_orchestrator.build_recipe_kb")
+    @patch("brew_oracle.orchestrator.brewing_orchestrator.Gemini")
+    def test_uses_configured_model_id(
+        self, mock_gemini, mock_build_recipe_kb, mock_build_pdf_kb
+    ):
+        mock_pdf_kb = MagicMock()
+        mock_build_pdf_kb.return_value = mock_pdf_kb
+        mock_recipe_kb = MagicMock()
+        mock_build_recipe_kb.return_value = mock_recipe_kb
+        mock_model = MagicMock()
+        mock_gemini.return_value = mock_model
+
+        with patch.dict(os.environ, {"MODEL_ID": "custom-model"}):
+            BrewingOrchestrator()
+
+        mock_gemini.assert_called_once_with(id="custom-model", api_key=None)
 
     @patch("brew_oracle.orchestrator.brewing_orchestrator.build_pdf_kb")
     @patch("brew_oracle.orchestrator.brewing_orchestrator.build_recipe_kb")

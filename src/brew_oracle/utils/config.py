@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     NUM_DOCUMENTS: int = Field(default=5)
 
     GOOGLE_API_KEY: str | None = Field(default=None)
+    MODEL_ID: str = Field(default="gemini-2.0-flash")
 
     model_config = SettingsConfigDict(
         env_file=".env",

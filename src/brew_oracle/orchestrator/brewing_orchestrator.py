@@ -21,7 +21,7 @@ class BrewingOrchestrator:
         self.pdf_kb = build_pdf_kb(hybrid=hybrid)
         self.recipe_kb = build_recipe_kb(hybrid=hybrid)
         s = Settings()
-        self.model = model or Gemini(id="gemini-2.0-flash", api_key=s.GOOGLE_API_KEY)
+        self.model = model or Gemini(id=s.MODEL_ID, api_key=s.GOOGLE_API_KEY)
 
         self.rerank = rerank
         if self.rerank:
