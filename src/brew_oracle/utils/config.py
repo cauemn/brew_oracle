@@ -1,3 +1,5 @@
+import logging
+
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -25,6 +27,15 @@ class Settings(BaseSettings):
 
     GOOGLE_API_KEY: str | None = Field(default=None)
     MODEL_ID: str = Field(default="gemini-2.0-flash")
+
+    LOG_LEVEL: int = Field(default=logging.INFO)
+
+    def __init__(self):
+        super().__init__()
+        if isinstance(self.LOG_LEVEL, str):
+            self.LOG_LEVEL = getattr(logging, self.LOG_LEVEL.upper(), logging.INFO)
+        else:
+            self.LOG_LEVEL = int(self.LOG_LEVEL)
 
     model_config = SettingsConfigDict(
         env_file=".env",

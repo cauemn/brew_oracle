@@ -1,4 +1,3 @@
-import logging
 import os
 from typing import Any
 
@@ -10,9 +9,9 @@ from pybeerxml.parser import Parser
 from tqdm import tqdm
 
 from brew_oracle.utils.config import Settings
+from brew_oracle.utils.logging import setup_logging
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = setup_logging(Settings().LOG_LEVEL)
 
 
 def build_recipe_kb(hybrid: bool = False) -> Qdrant:
