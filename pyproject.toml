@@ -23,7 +23,7 @@ ingest-pdfs         = { cmd = "python -c \"from brew_oracle.knowledge.pdf_kb imp
 ingest-pdfs-hybrid  = { cmd = "python -c \"from brew_oracle.knowledge.pdf_kb import ingest_pdfs; ingest_pdfs(hybrid=True)\"", env = { PYTHONPATH = "src", HF_HUB_OFFLINE = "" }, env_file = ".env" }
 ingest-recipes      = { cmd = "python -m brew_oracle.knowledge.beerxml_kb", env = { PYTHONPATH = "src", HF_HUB_OFFLINE = "" }, env_file = ".env" }
 ingest-recipes-hybrid = { cmd = "python -m brew_oracle.knowledge.beerxml_kb --hybrid", env = { PYTHONPATH = "src", HF_HUB_OFFLINE = "" }, env_file = ".env" }
-brew-oracle         = { cmd = "python -m brew_oracle.core.run", env = { PYTHONPATH = "src", HF_HUB_OFFLINE = "" }, env_file = ".env" }
+brew-oracle         = { cmd = "python -m brew_oracle.core.run", env_file = ".env" }
 lint                = { cmd = "ruff check .", env = { PYTHONPATH = "src" } }
 lint-fix            = { cmd = "ruff check . --fix", env = { PYTHONPATH = "src" } }
 format              = { cmd = "ruff format", env = { PYTHONPATH = "src" } }
