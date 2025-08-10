@@ -1,7 +1,6 @@
 # src/brew_oracle/orchestrator/brewing_orchestrator.py
 from agno.agent import Agent
 from agno.models.google import Gemini
-
 from brew_oracle.knowledge.beerxml_kb import build_recipe_kb
 from brew_oracle.knowledge.pdf_kb import build_pdf_kb
 from brew_oracle.utils.config import Settings

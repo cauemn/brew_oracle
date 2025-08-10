@@ -1,9 +1,8 @@
 import argparse
 
+from brew_oracle.utils.config import Settings
 from qdrant_client import QdrantClient
 from qdrant_client.http.models import Distance, SparseVectorParams, VectorParams
-
-from brew_oracle.utils.config import Settings
 
 
 def main(force_recreate: bool = False, hybrid: bool = False, collection_name: str | None = None):

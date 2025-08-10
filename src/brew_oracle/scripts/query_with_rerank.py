@@ -2,10 +2,9 @@ from __future__ import annotations
 
 import argparse
 
-from sentence_transformers import CrossEncoder
-
 from brew_oracle.knowledge.pdf_kb import build_pdf_kb
 from brew_oracle.utils.config import Settings
+from sentence_transformers import CrossEncoder
 
 
 def main() -> None:

@@ -41,10 +41,11 @@ class TestBrewingOrchestrator(unittest.TestCase):
         mock_model = MagicMock()
         mock_gemini.return_value = mock_model
 
-        with patch.dict(os.environ, {"MODEL_ID": "custom-model"}):
+        with patch.dict(os.environ, {"MODEL_ID": "custom-model", 
+                                     "GOOGLE_API_KEY": "fake-test-key"}):
             BrewingOrchestrator()
 
-        mock_gemini.assert_called_once_with(id="custom-model", api_key=None)
+        mock_gemini.assert_called_once_with(id="custom-model", api_key="fake-test-key")
 
     @patch("brew_oracle.orchestrator.brewing_orchestrator.build_pdf_kb")
     @patch("brew_oracle.orchestrator.brewing_orchestrator.build_recipe_kb")

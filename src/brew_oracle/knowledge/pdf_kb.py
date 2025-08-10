@@ -6,7 +6,6 @@ from agno.embedder.sentence_transformer import SentenceTransformerEmbedder
 from agno.knowledge.pdf import PDFKnowledgeBase, PDFReader
 from agno.vectordb.qdrant import Qdrant
 from agno.vectordb.search import SearchType
-
 from brew_oracle.utils.config import Settings
 from brew_oracle.utils.logging import setup_logging
 
