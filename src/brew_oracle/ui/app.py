@@ -18,11 +18,14 @@ def main() -> None:
         st.session_state.messages = []
     if "question_input" not in st.session_state:
         st.session_state.question_input = ""
+    if st.session_state.get("clear_question"):
+        st.session_state.question_input = ""
+        st.session_state.clear_question = False
 
     for msg in st.session_state.messages:
-        with st.chat_message("user"):
+        with st.chat_message("user", avatar="👤"):
             st.markdown(msg["question"])
-        with st.chat_message("assistant"):
+        with st.chat_message("assistant", avatar="🤖"):
             st.markdown(msg["answer"])
             if msg["refs"]:
                 st.markdown("**Referências**")
@@ -41,7 +44,7 @@ def main() -> None:
         st.session_state.messages.append(
             {"question": question, "answer": text, "refs": refs}
         )
-        st.session_state.question_input = ""
+        st.session_state.clear_question = True
         st.rerun()
 
 
