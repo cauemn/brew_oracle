@@ -16,16 +16,8 @@ def main() -> None:
 
     if "messages" not in st.session_state:
         st.session_state.messages = []
-
-    with st.form("question_form", clear_on_submit=True):
-        question = st.text_input("Pergunta", placeholder="Como posso ajudar?")
-        submitted = st.form_submit_button("Consultar", type="primary")
-        if submitted and question.strip():
-            with st.spinner("Consultando..."):
-                text, refs = orchestrator.ask_with_refs(question)
-            st.session_state.messages.append(
-                {"question": question, "answer": text, "refs": refs}
-            )
+    if "question_input" not in st.session_state:
+        st.session_state.question_input = ""
 
     for msg in st.session_state.messages:
         with st.chat_message("user"):
@@ -36,6 +28,21 @@ def main() -> None:
                 st.markdown("**Referências**")
                 for ref in msg["refs"]:
                     st.markdown(f"- {ref}")
+
+    question = st.text_input(
+        "Pergunta",
+        placeholder="Como posso ajudar?",
+        key="question_input",
+        label_visibility="collapsed",
+    )
+    if st.button("Consultar", type="primary") and question.strip():
+        with st.spinner("Consultando..."):
+            text, refs = orchestrator.ask_with_refs(question)
+        st.session_state.messages.append(
+            {"question": question, "answer": text, "refs": refs}
+        )
+        st.session_state.question_input = ""
+        st.rerun()
 
 
 if __name__ == "__main__":
