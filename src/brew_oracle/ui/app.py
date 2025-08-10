@@ -1,0 +1,52 @@
+import streamlit as st
+
+from brew_oracle.orchestrator.brewing_orchestrator import BrewingOrchestrator
+
+
+@st.cache_resource
+def get_orchestrator() -> BrewingOrchestrator:
+    return BrewingOrchestrator(hybrid=True, rerank=True)
+
+
+def main() -> None:
+    st.set_page_config(page_title="Brew Oracle", page_icon="🍺", layout="wide")
+    st.title("Brew Oracle")
+
+    orchestrator = get_orchestrator()
+
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+    if "question_input" not in st.session_state:
+        st.session_state.question_input = ""
+    if st.session_state.get("clear_question"):
+        st.session_state.question_input = ""
+        st.session_state.clear_question = False
+
+    for msg in st.session_state.messages:
+        with st.chat_message("user", avatar="👤"):
+            st.markdown(msg["question"])
+        with st.chat_message("assistant", avatar="🤖"):
+            st.markdown(msg["answer"])
+            if msg["refs"]:
+                st.markdown("**Referências**")
+                for ref in msg["refs"]:
+                    st.markdown(f"- {ref}")
+
+    question = st.text_input(
+        "Pergunta",
+        placeholder="Como posso ajudar?",
+        key="question_input",
+        label_visibility="collapsed",
+    )
+    if st.button("Consultar", type="primary") and question.strip():
+        with st.spinner("Consultando..."):
+            text, refs = orchestrator.ask_with_refs(question)
+        st.session_state.messages.append(
+            {"question": question, "answer": text, "refs": refs}
+        )
+        st.session_state.clear_question = True
+        st.rerun()
+
+
+if __name__ == "__main__":
+    main()
