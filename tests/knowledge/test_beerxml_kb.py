@@ -3,7 +3,6 @@ from unittest.mock import MagicMock, patch
 
 from agno.document import Document
 from agno.vectordb.search import SearchType
-
 from brew_oracle.knowledge.beerxml_kb import build_recipe_kb, ingest_recipes
 
 

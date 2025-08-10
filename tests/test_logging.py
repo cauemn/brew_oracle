@@ -11,8 +11,8 @@ def test_settings_log_level_from_env(monkeypatch):
 
 def test_modules_share_logger(monkeypatch):
     monkeypatch.setenv("LOG_LEVEL", "WARNING")
-    import brew_oracle.knowledge.pdf_kb as pdf_kb
     import brew_oracle.knowledge.beerxml_kb as beerxml_kb
+    import brew_oracle.knowledge.pdf_kb as pdf_kb
     importlib.reload(pdf_kb)
     importlib.reload(beerxml_kb)
     assert pdf_kb.logger is beerxml_kb.logger

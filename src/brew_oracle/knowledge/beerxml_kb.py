@@ -5,11 +5,10 @@ from agno.document import Document
 from agno.embedder.sentence_transformer import SentenceTransformerEmbedder
 from agno.vectordb.qdrant import Qdrant
 from agno.vectordb.search import SearchType
-from pybeerxml.parser import Parser
-from tqdm import tqdm
-
 from brew_oracle.utils.config import Settings
 from brew_oracle.utils.logging import setup_logging
+from pybeerxml.parser import Parser
+from tqdm import tqdm
 
 logger = setup_logging(Settings().LOG_LEVEL)
 
