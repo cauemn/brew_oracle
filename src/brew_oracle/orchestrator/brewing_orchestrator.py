@@ -52,7 +52,7 @@ class BrewingOrchestrator:
             name="BrewingOrchestrator",
             model=self.model,
             knowledge=self.pdf_kb,  # Initial knowledge base, will be overridden by search_knowledge
-            search_knowledge=_combined_search,  # type: ignore
+            search_knowledge=_combined_search,
             add_references=True,
             markdown=True,
             show_tool_calls=True,

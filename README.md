@@ -130,6 +130,19 @@ pdm run brew-oracle --hybrid
 
 ---
 
+## 🖥️ Interface Web (Streamlit)
+
+Prefere uma interface visual? Rode a aplicação web com:
+
+```bash
+pdm run ui
+```
+
+Uma página do Streamlit será aberta no navegador, permitindo fazer perguntas,
+ver respostas em Markdown com referências e manter o histórico da conversa.
+
+---
+
 ## 🧪 Testes
 
 Para executar os testes automatizados do projeto, utilize o seguinte comando:
