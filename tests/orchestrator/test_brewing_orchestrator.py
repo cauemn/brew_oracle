@@ -161,6 +161,60 @@ class TestBrewingOrchestrator(unittest.TestCase):
     @patch("brew_oracle.orchestrator.brewing_orchestrator.build_pdf_kb")
     @patch("brew_oracle.orchestrator.brewing_orchestrator.build_recipe_kb")
     @patch("brew_oracle.orchestrator.brewing_orchestrator.Gemini")
+    def test_combined_search_deduplicates_and_normalizes(
+        self, mock_gemini, mock_build_recipe_kb, mock_build_pdf_kb
+    ):
+        mock_pdf_kb = MagicMock()
+        mock_recipe_kb = MagicMock()
+        mock_build_pdf_kb.return_value = mock_pdf_kb
+        mock_build_recipe_kb.return_value = mock_recipe_kb
+
+        doc1 = MagicMock(content="pdf_doc1", meta_data={"source": "s1", "page": 1})
+        doc2 = MagicMock(content="dup", metadata={"source": "s1", "page": 1})
+        mock_pdf_kb.search.return_value = [doc1, doc2]
+        recipe_doc = MagicMock(content="recipe_doc1")
+        mock_recipe_kb.search.return_value = [recipe_doc]
+
+        agent = BrewingOrchestrator()
+        docs = agent.agent.search_knowledge("test query")
+
+        self.assertEqual(len(docs), 2)
+        contents = {d.content for d in docs}
+        self.assertIn("pdf_doc1", contents)
+        self.assertIn("recipe_doc1", contents)
+        self.assertNotIn("dup", contents)
+
+    @patch("brew_oracle.orchestrator.brewing_orchestrator.build_pdf_kb")
+    @patch("brew_oracle.orchestrator.brewing_orchestrator.build_recipe_kb")
+    @patch("brew_oracle.orchestrator.brewing_orchestrator.Gemini")
+    @patch("sentence_transformers.CrossEncoder")
+    def test_rerank_respects_weights(
+        self, mock_cross_encoder, mock_gemini, mock_build_recipe_kb, mock_build_pdf_kb
+    ):
+        mock_pdf_kb = MagicMock()
+        mock_recipe_kb = MagicMock()
+        mock_build_pdf_kb.return_value = mock_pdf_kb
+        mock_build_recipe_kb.return_value = mock_recipe_kb
+
+        pdf_doc = MagicMock(content="pdf_doc", meta_data={"source": "s1", "page": 1})
+        recipe_doc = MagicMock(content="recipe_doc", meta_data={})
+        mock_pdf_kb.search.return_value = [pdf_doc]
+        mock_recipe_kb.search.return_value = [recipe_doc]
+
+        mock_encoder = MagicMock()
+        mock_cross_encoder.return_value = mock_encoder
+        mock_encoder.predict.return_value = [0.5, 0.5]
+
+        agent = BrewingOrchestrator(rerank=True, pdf_weight=1.0, recipe_weight=2.0)
+        docs = agent.agent.search_knowledge("test query")
+
+        self.assertEqual(docs[0].content, "recipe_doc")
+        mock_cross_encoder.assert_called_once()
+        mock_encoder.predict.assert_called_once()
+
+    @patch("brew_oracle.orchestrator.brewing_orchestrator.build_pdf_kb")
+    @patch("brew_oracle.orchestrator.brewing_orchestrator.build_recipe_kb")
+    @patch("brew_oracle.orchestrator.brewing_orchestrator.Gemini")
     def test_hybrid_parameter_passed_to_kbs(
         self, mock_gemini, mock_build_recipe_kb, mock_build_pdf_kb
     ):

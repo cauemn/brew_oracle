@@ -17,6 +17,8 @@ class BrewingOrchestrator:
         rerank_model_id: str = "cross-encoder/ms-marco-MiniLM-L-6-v2",
         rerank_model_kwargs: dict | None = None,
         hybrid: bool = False,
+        pdf_weight: float = 1.0,
+        recipe_weight: float = 1.0,
     ) -> None:
         self.pdf_kb = build_pdf_kb(hybrid=hybrid)
         self.recipe_kb = build_recipe_kb(hybrid=hybrid)
@@ -24,6 +26,8 @@ class BrewingOrchestrator:
         self.model = model or Gemini(id=s.MODEL_ID, api_key=s.GOOGLE_API_KEY)
 
         self.rerank = rerank
+        self.pdf_weight = pdf_weight
+        self.recipe_weight = recipe_weight
         if self.rerank:
             from sentence_transformers import CrossEncoder
 
@@ -32,22 +36,55 @@ class BrewingOrchestrator:
         def _combined_search(query: str, *args, **kwargs):
             pdf_docs = self.pdf_kb.search(query, *args, **kwargs)
             recipe_docs = self.recipe_kb.search(query, *args, **kwargs)
-            combined_docs = pdf_docs + recipe_docs
+
+            # Normalize metadata
+            for doc in [*pdf_docs, *recipe_docs]:
+                meta = getattr(doc, "meta_data", None)
+                if not isinstance(meta, dict):
+                    meta = getattr(doc, "metadata", None)
+                if not isinstance(meta, dict):
+                    meta = {}
+                setattr(doc, "meta_data", meta)
+
+            docs_with_origin = [(doc, "pdf") for doc in pdf_docs] + [
+                (doc, "recipe") for doc in recipe_docs
+            ]
+
+            seen: set[tuple[str, int]] = set()
+            deduped: list[tuple[object, str]] = []
+            for doc, origin in docs_with_origin:
+                meta = getattr(doc, "meta_data", {})
+                source = meta.get("source")
+                page = meta.get("page")
+                key = (source, page)
+                if source is not None and page is not None:
+                    if key in seen:
+                        continue
+                    seen.add(key)
+                deduped.append((doc, origin))
 
             if self.rerank:
                 pairs = [
                     (query, getattr(doc, "content", getattr(doc, "text", "")))
-                    for doc in combined_docs
+                    for doc, _ in deduped
                 ]
                 scores = self._cross_encoder.predict(pairs)
+                weights = [
+                    self.pdf_weight if origin == "pdf" else self.recipe_weight
+                    for _, origin in deduped
+                ]
+                weighted_scores = [s * w for s, w in zip(scores, weights, strict=False)]
                 reranked_docs = [
                     doc
-                    for doc, _ in sorted(
-                        zip(combined_docs, scores, strict=False), key=lambda x: x[1], reverse=True
+                    for (_, (doc, _)) in sorted(
+                        zip(weighted_scores, deduped, strict=False),
+                        key=lambda x: x[0],
+                        reverse=True,
                     )
                 ]
                 return reranked_docs
-            return combined_docs
+
+            return [doc for doc, _ in deduped]
 
         self.agent = Agent(
             name="BrewingOrchestrator",
