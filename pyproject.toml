@@ -5,7 +5,7 @@ description = "AI agent specialized in craft beer, recipes, styles, and all thin
 authors = [
     {name = "cauemn", email = "caue@stellaria.com.br"},
 ]
-dependencies = ["agno>=1.7.8", "qdrant-client>=1.15.1", "pdfplumber>=0.11.7", "python-dotenv>=1.1.1", "tqdm>=4.67.1", "sentence-transformers>=5.1.0", "xmltodict>=0.14.2", "pypdf>=5.9.0", "pydantic-settings>=2.10.1", "google-genai>=1.29.0", "fastembed>=0.3.4", "pybeerxml>=0.2.0", "streamlit>=1.48.0"]
+dependencies = ["agno>=1.7.8", "qdrant-client>=1.15.1", "pdfplumber>=0.11.7", "python-dotenv>=1.1.1", "tqdm>=4.67.1", "sentence-transformers>=5.1.0", "xmltodict>=0.14.2", "pypdf>=5.9.0", "pydantic-settings>=2.10.1", "google-genai>=1.29.0", "fastembed>=0.3.4", "pybeerxml>=0.2.0", "streamlit>=1.48.0", "discord.py>=2.3.2"]
 requires-python = "==3.13.*"
 readme = "README.md"
 license = {file = "LICENSE"}
@@ -25,6 +25,7 @@ ingest-recipes      = { cmd = "python -m brew_oracle.knowledge.beerxml_kb", env 
 ingest-recipes-hybrid = { cmd = "python -m brew_oracle.knowledge.beerxml_kb --hybrid", env = { PYTHONPATH = "src", HF_HUB_OFFLINE = "" }, env_file = ".env" }
 brew-oracle         = { cmd = "python -m brew_oracle.core.run", env = { PYTHONPATH = "src", HF_HUB_OFFLINE = "" }, env_file = ".env" }
 ui                  = { cmd = "streamlit run src/brew_oracle/ui/app.py", env = { PYTHONPATH = "src", HF_HUB_OFFLINE = "" }, env_file = ".env" }
+discord-bot         = { cmd = "python -m brew_oracle.agents.discord_bot", env = { PYTHONPATH = "src" }, env_file = ".env" }
 lint                = { cmd = "ruff check .", env = { PYTHONPATH = "src" } }
 lint-fix            = { cmd = "ruff check . --fix", env = { PYTHONPATH = "src" } }
 format              = { cmd = "ruff format", env = { PYTHONPATH = "src" } }
