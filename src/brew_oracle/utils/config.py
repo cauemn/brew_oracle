@@ -27,6 +27,7 @@ class Settings(BaseSettings):
 
     GOOGLE_API_KEY: str | None = Field(default=None)
     MODEL_ID: str = Field(default="gemini-2.0-flash")
+    DISCORD_TOKEN: str | None = Field(default=None)
 
     LOG_LEVEL: int = Field(default=logging.INFO)
 
